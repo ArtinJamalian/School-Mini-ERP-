@@ -1,0 +1,779 @@
+
+create sequence  std_seq;
+
+create table std (
+    id                 number default on null std_seq.nextval 
+                       constraint std_id_pk primary key,
+    edu_base_id        number,
+    fname              varchar2(60 char) not null,
+    lname              varchar2(60 char) not null,
+    national_id        number
+                       constraint std_national_id_unq unique not null,
+    birth              date not null,
+    age                number not null,
+    father_name        varchar2(60 char) not null,
+    image              blob,
+    image_filename     varchar2(255 char),
+    image_mimetype     varchar2(255 char),
+    image_charset      varchar2(255 char),
+    image_lastupd      date,
+    std_field_id       number not null,
+    last_base_grade    number,
+    address            varchar2(100 char) not null,
+    act_flag           number(1 , 0) default on null 1,
+    created            date not null,
+    created_by         varchar2(255 char) not null,
+    updated            date not null,
+    updated_by         varchar2(255 char) not null
+);
+
+-- table index
+create index std_i1 on std (edu_base_id);
+
+
+
+create sequence  std_calendar_seq;
+
+create table std_calendar (
+    id             number default on null std_calendar_seq.nextval 
+                   constraint std_calendar_id_pk primary key,
+    edu_base_id    number,
+    classes_id     number,
+    lessons_id     number,
+    std_field      number,
+    day            varchar2(60 char) not null,
+    act_flag       number(1 , 0) default on null 1,
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+-- table index
+create index std_calendar_i1 on std_calendar (edu_base_id);
+
+create index std_calendar_i2 on std_calendar (classes_id);
+
+create index std_calendar_i3 on std_calendar (lessons_id);
+
+create index std_calendar_i4 on std_calendar (std_field);
+
+
+
+create sequence  std_attendance_seq;
+
+create table std_attendance (
+    id             number default on null std_attendance_seq.nextval 
+                   constraint std_attendance_id_pk primary key,
+    std_id         number                   constraint std_attendance_std_id_fk
+                   references std not null,
+    edu_base_id    number,
+    day            date not null,
+    valid          number(1 , 0),
+    description    varchar2(500 char),
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+-- table index
+create index std_attendance_i1 on std_attendance (std_id);
+
+create index std_attendance_i2 on std_attendance (edu_base_id);
+
+
+
+create sequence  std_warns_seq;
+
+create table std_warns (
+    id             number default on null std_warns_seq.nextval 
+                   constraint std_warns_id_pk primary key,
+    std_id         number                   constraint std_warns_std_id_fk
+                   references std not null,
+    edu_base_id    number,
+    title          varchar2(100 char) not null,
+    parent_inv     number(1 , 0),
+    act_flag       number(1 , 0) default on null 1,
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+-- table index
+create index std_warns_i1 on std_warns (std_id);
+
+create index std_warns_i2 on std_warns (edu_base_id);
+
+
+
+create sequence  edu_base_seq;
+
+create table edu_base (
+    id            number default on null edu_base_seq.nextval 
+                  constraint edu_base_id_pk primary key,
+    edu           varchar2(60 char) not null,
+    std_cnt       number not null,
+    act_flag      number(1 , 0) default on null 1,
+    created       date not null,
+    created_by    varchar2(255 char) not null,
+    updated       date not null,
+    updated_by    varchar2(255 char) not null
+);
+
+
+
+create sequence  std_field_seq;
+
+create table std_field (
+    id             number default on null std_field_seq.nextval 
+                   constraint std_field_id_pk primary key,
+    flield_name    varchar2(60 char) not null,
+    act_flag       number(1 , 0) default on null 1,
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+
+
+create sequence  classes_seq;
+
+create table classes (
+    id             number default on null classes_seq.nextval 
+                   constraint classes_id_pk primary key,
+    teachers_id    number,
+    std_id         number                   constraint classes_std_id_fk
+                   references std not null,
+    code           varchar2(20 char) not null,
+    std_cnt        number not null,
+    act_flag       number(1 , 0) default on null 1,
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+-- table index
+create index classes_i1 on classes (teachers_id);
+
+create index classes_i2 on classes (std_id);
+
+
+
+create sequence  std_classes_seq;
+
+create table std_classes (
+    id            number default on null std_classes_seq.nextval 
+                  constraint std_classes_id_pk primary key,
+    std_id        number                  constraint std_classes_std_id_fk
+                  references std not null,
+    classes_id    number                  constraint std_classes_classes_id_fk
+                  references classes not null,
+    StartDate     date,
+    EndDate       date,
+    act_flag      number(1 , 0) default on null 1,
+    created       date not null,
+    created_by    varchar2(255 char) not null,
+    updated       date not null,
+    updated_by    varchar2(255 char) not null
+);
+
+-- table index
+create index std_classes_i1 on std_classes (std_id);
+
+create index std_classes_i2 on std_classes (classes_id);
+
+
+
+create sequence  teacher_classes_seq;
+
+create table teacher_classes (
+    id             number default on null teacher_classes_seq.nextval 
+                   constraint teacher_classes_id_pk primary key,
+    teachers_id    number,
+    edu_base_id    number                   constraint teacher_classes_edu_base_id_fk
+                   references edu_base not null,
+    classes_id     number                   constraint teacher_classes_classes_id_fk
+                   references classes not null,
+    act_flag       number(1 , 0) default on null 1,
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+-- table index
+create index teacher_classes_i1 on teacher_classes (teachers_id);
+
+create index teacher_classes_i2 on teacher_classes (edu_base_id);
+
+create index teacher_classes_i3 on teacher_classes (classes_id);
+
+
+
+create sequence  teachers_seq;
+
+create table teachers (
+    id                number default on null teachers_seq.nextval 
+                      constraint teachers_id_pk primary key,
+    fname             varchar2(60 char) not null,
+    lname             varchar2(60 char) not null,
+    national_id       number
+                      constraint teachers_national_id_unq unique not null,
+    birth             date not null,
+    age               number not null,
+    father_name       varchar2(60 char) not null,
+    image             blob,
+    image_filename    varchar2(255 char),
+    image_mimetype    varchar2(255 char),
+    image_charset     varchar2(255 char),
+    image_lastupd     date,
+    degree            varchar2(60 char) not null,
+    act_flag          number(1 , 0) default on null 1,
+    created           date not null,
+    created_by        varchar2(255 char) not null,
+    updated           date not null,
+    updated_by        varchar2(255 char) not null
+);
+
+
+
+create sequence  lessons_seq;
+
+create table lessons (
+    id             number default on null lessons_seq.nextval 
+                   constraint lessons_id_pk primary key,
+    edu_base_id    number                   constraint lessons_edu_base_id_fk
+                   references edu_base not null,
+    name           varchar2(60 char) not null,
+    act_flag       number(1 , 0) default on null 1,
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+-- table index
+create index lessons_i1 on lessons (edu_base_id);
+
+
+
+create sequence  assignments_seq;
+
+create table assignments (
+    id             number default on null assignments_seq.nextval 
+                   constraint assignments_id_pk primary key,
+    edu_base_id    number                   constraint assignments_edu_base_id_fk
+                   references edu_base not null,
+    lessons_id     number                   constraint assignments_lessons_id_fk
+                   references lessons not null,
+    teachers_id    number                   constraint assignments_teachers_id_fk
+                   references teachers not null,
+    classes_id     number                   constraint assignments_classes_id_fk
+                   references classes not null,
+    title          varchar2(60 char) not null,
+    StartDate      date not null,
+    EndDate        date not null,
+    description    varchar2(300 char),
+    act_flag       number(1 , 0) default on null 1,
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+-- table index
+create index assignments_i1 on assignments (edu_base_id);
+
+create index assignments_i2 on assignments (lessons_id);
+
+create index assignments_i3 on assignments (teachers_id);
+
+create index assignments_i4 on assignments (classes_id);
+
+
+
+create sequence  assignments_submission_seq;
+
+create table assignments_submission (
+    id                number default on null assignments_submission_seq.nextval 
+                      constraint assignments_submission_id_pk primary key,
+    std_id            number                      constraint assignments_submission_std_id_fk
+                      references std not null,
+    assignemts_id     number                      constraint assignments_submission_assignemts_id_fk
+                      references assignments not null,
+    submissionDate    date not null,
+    grade             number not null,
+    remarks           varchar2(500 char),
+    act_flag          number(1 , 0) default on null 1,
+    created           date not null,
+    created_by        varchar2(255 char) not null,
+    updated           date not null,
+    updated_by        varchar2(255 char) not null
+);
+
+-- table index
+create index assignments_submission_i1 on assignments_submission (std_id);
+
+create index assignments_submission_i2 on assignments_submission (assignemts_id);
+
+
+
+create sequence  question_bank_seq;
+
+create table question_bank (
+    id             number default on null question_bank_seq.nextval 
+                   constraint question_bank_id_pk primary key,
+    edu_base_id    number                   constraint question_bank_edu_base_id_fk
+                   references edu_base not null,
+    teachers_id    number                   constraint question_bank_teachers_id_fk
+                   references teachers not null,
+    q_desc         varchar2(500 char) not null,
+    q_num          number not null,
+    correct_ans    varchar2(500 char) not null,
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+-- table index
+create index question_bank_i1 on question_bank (edu_base_id);
+
+create index question_bank_i2 on question_bank (teachers_id);
+
+
+
+create sequence  question_choices_seq;
+
+create table question_choices (
+    id                number default on null question_choices_seq.nextval 
+                      constraint question_choices_id_pk primary key,
+    q_id              number                      constraint question_choices_q_id_fk
+                      references question_bank not null,
+    correct_ans_id    number                      constraint question_choices_correct_ans_id_fk
+                      references question_bank not null,
+    choice_num        number,
+    choice_desc       varchar2(500 char),
+    correct           number(1 , 0),
+    created           date not null,
+    created_by        varchar2(255 char) not null,
+    updated           date not null,
+    updated_by        varchar2(255 char) not null
+);
+
+-- table index
+create index question_choices_i1 on question_choices (q_id);
+
+create index question_choices_i2 on question_choices (correct_ans_id);
+
+
+
+create sequence  exams_seq;
+
+create table exams (
+    id             number default on null exams_seq.nextval 
+                   constraint exams_id_pk primary key,
+    edu_base_id    number                   constraint exams_edu_base_id_fk
+                   references edu_base not null,
+    lessons_id     number                   constraint exams_lessons_id_fk
+                   references lessons not null,
+    teachers_id    number                   constraint exams_teachers_id_fk
+                   references teachers not null,
+    classes_id     number                   constraint exams_classes_id_fk
+                   references classes not null,
+    title          varchar2(60 char) not null,
+    StartDate      date not null,
+    EndDate        date not null,
+    act_flag       number(1 , 0) default on null 1,
+    created        date not null,
+    created_by     varchar2(255 char) not null,
+    updated        date not null,
+    updated_by     varchar2(255 char) not null
+);
+
+-- table index
+create index exams_i1 on exams (edu_base_id);
+
+create index exams_i2 on exams (lessons_id);
+
+create index exams_i3 on exams (teachers_id);
+
+create index exams_i4 on exams (classes_id);
+
+
+
+create sequence  exam_submission_seq;
+
+create table exam_submission (
+    id                number default on null exam_submission_seq.nextval 
+                      constraint exam_submission_id_pk primary key,
+    std_id            number                      constraint exam_submission_std_id_fk
+                      references std not null,
+    exams_id          number                      constraint exam_submission_exams_id_fk
+                      references exams not null,
+    q_id              number                      constraint exam_submission_q_id_fk
+                      references question_bank not null,
+    correct_ans_id    number                      constraint exam_submission_correct_ans_id_fk
+                      references question_bank not null,
+    correct           number(1 , 0),
+    created           date not null,
+    created_by        varchar2(255 char) not null,
+    updated           date not null,
+    updated_by        varchar2(255 char) not null
+);
+
+-- table index
+create index exam_submission_i1 on exam_submission (std_id);
+
+create index exam_submission_i2 on exam_submission (exams_id);
+
+create index exam_submission_i3 on exam_submission (q_id);
+
+create index exam_submission_i4 on exam_submission (correct_ans_id);
+
+
+
+create sequence  users_seq;
+
+create table users (
+    id            number default on null users_seq.nextval 
+                  constraint users_id_pk primary key,
+    role_id       number,
+    user_name     varchar2(60 char) not null,
+    pass          varchar2(60 char) not null,
+    hashpass      varchar2(600 char),
+    act_flag      number(1 , 0) default on null 1,
+    created       date not null,
+    created_by    varchar2(255 char) not null,
+    updated       date not null,
+    updated_by    varchar2(255 char) not null
+);
+
+-- table index
+create index users_i1 on users (role_id);
+
+
+
+create sequence  role_seq;
+
+create table role (
+    id            number default on null role_seq.nextval 
+                  constraint role_id_pk primary key,
+    role_name     varchar2(60 char) not null,
+    act_flag      number(1 , 0) default on null 1,
+    created       date not null,
+    created_by    varchar2(255 char) not null,
+    updated       date not null,
+    updated_by    varchar2(255 char) not null
+);
+
+
+
+alter table std add constraint std_edu_base_id_fk foreign key (edu_base_id) references edu_base;
+
+alter table std_calendar add constraint std_calendar_edu_base_id_fk foreign key (edu_base_id) references edu_base;
+
+alter table std_calendar add constraint std_calendar_classes_id_fk foreign key (classes_id) references classes;
+
+alter table std_calendar add constraint std_calendar_lessons_id_fk foreign key (lessons_id) references lessons;
+
+alter table std_calendar add constraint std_calendar_std_field_fk foreign key (std_field) references std_field;
+
+alter table std_attendance add constraint std_attendance_edu_base_id_fk foreign key (edu_base_id) references edu_base;
+
+alter table std_warns add constraint std_warns_edu_base_id_fk foreign key (edu_base_id) references edu_base;
+
+alter table classes add constraint classes_teachers_id_fk foreign key (teachers_id) references teachers;
+
+alter table teacher_classes add constraint teacher_classes_teachers_id_fk foreign key (teachers_id) references teachers;
+
+alter table users add constraint users_role_id_fk foreign key (role_id) references role;
+
+-- triggers
+create or replace trigger std_biu
+    before insert or update
+    on std
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end std_biu;
+/
+
+
+create or replace trigger std_calendar_biu
+    before insert or update
+    on std_calendar
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end std_calendar_biu;
+/
+
+
+create or replace trigger std_attendance_biu
+    before insert or update
+    on std_attendance
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end std_attendance_biu;
+/
+
+
+create or replace trigger std_warns_biu
+    before insert or update
+    on std_warns
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end std_warns_biu;
+/
+
+
+create or replace trigger edu_base_biu
+    before insert or update
+    on edu_base
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end edu_base_biu;
+/
+
+
+create or replace trigger std_field_biu
+    before insert or update
+    on std_field
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end std_field_biu;
+/
+
+
+create or replace trigger classes_biu
+    before insert or update
+    on classes
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end classes_biu;
+/
+
+
+create or replace trigger std_classes_biu
+    before insert or update
+    on std_classes
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end std_classes_biu;
+/
+
+
+create or replace trigger teacher_classes_biu
+    before insert or update
+    on teacher_classes
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end teacher_classes_biu;
+/
+
+
+create or replace trigger teachers_biu
+    before insert or update
+    on teachers
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end teachers_biu;
+/
+
+
+create or replace trigger lessons_biu
+    before insert or update
+    on lessons
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end lessons_biu;
+/
+
+
+create or replace trigger assignments_biu
+    before insert or update
+    on assignments
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end assignments_biu;
+/
+
+
+create or replace trigger assignments_submission_biu
+    before insert or update
+    on assignments_submission
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end assignments_submission_biu;
+/
+
+
+create or replace trigger question_bank_biu
+    before insert or update
+    on question_bank
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end question_bank_biu;
+/
+
+
+create or replace trigger question_choices_biu
+    before insert or update
+    on question_choices
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end question_choices_biu;
+/
+
+
+create or replace trigger exams_biu
+    before insert or update
+    on exams
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end exams_biu;
+/
+
+
+create or replace trigger exam_submission_biu
+    before insert or update
+    on exam_submission
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end exam_submission_biu;
+/
+
+
+create or replace trigger users_biu
+    before insert or update
+    on users
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end users_biu;
+/
+
+
+create or replace trigger role_biu
+    before insert or update
+    on role
+    for each row
+begin
+    if inserting then
+        :new.created := sysdate;
+        :new.created_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+    end if;
+    :new.updated := sysdate;
+    :new.updated_by := coalesce(sys_context('APEX$SESSION','APP_USER'),user);
+end role_biu;
+/
