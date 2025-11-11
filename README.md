@@ -58,3 +58,11 @@ Framework: Oracle APEX (compatible with APEX 24.1 and above)
 Language: SQL / PL/SQL
 
 Purpose: Educational institutions, academies, and schools that need a centralized system for student management and academic performance tracking.
+
+
+- Demo 
+https://oracleapex.com/ords/r/apex/workspace-sign-in/oracle-apex-sign-in?session=5933660079374
+
+Workspace: WS_RES
+Username: bluart.jamalian@gmail.com
+Pass: Artin_2020
